@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>MVC Model</title>
+
+  
+</head>
+<body>
+  <div id='show'></div>
+  <button id="btn">addData</button>
+
+  <script>
+    function Model() {
+      var val = 0;
+      this.add = function() {
+        val++
+      }
+      this.getVal = function() {
+        return val
+      }
+
+      // 观察者模式
+      var views = []
+      // 将观察者存入数组
+      this.regist = function(view) {
+        views.push(view)
+      }
+      // 通知view更新
+      this.notify = function() {
+        for(var i = 0; i < views.length; i++) {
+          if(views[i].render) {
+            views[i].render(this)
+          }
+        }
+      }
+    }
+
+    function View(controller) {
+      var $show = document.getElementById('show')
+      var $btn = document.getElementById('btn')
+
+      this.render = function(model) {
+        $show.innerText = model.getVal()
+      }
+      // view 和 controller之间使用策略模式
+      $btn.onclick =  controller.add
+    }
+
+    function Controller() {
+      var model = null;
+      var view = null;
+
+      this.init = function() {
+        model = new Model();
+        view = new View(this);
+        model.regist(view);
+        view.render(model);
+      }
+      this.add = function() {
+        model.add()
+        model.notify()
+      }
+    }
+
+    (function(){
+      var controller = new Controller()
+      controller.init()
+    })()
+
+  </script>
+
+</body>
+</html>
