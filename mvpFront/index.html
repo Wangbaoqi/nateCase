@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>MVC Model</title>
+
+  
+</head>
+<body>
+  <div id='show'></div>
+  <button id="btn">addData</button>
+
+  <script>
+    function Model() {
+      var val = 0;
+      this.add = function() {
+        val++
+      }
+      this.getVal = function() {
+        return val
+      }
+    }
+
+    function View(controller) {
+      var $show = document.getElementById('show')
+      var $btn = document.getElementById('btn')
+
+      this.render = function(model) {
+        $show.innerText = model.getVal()
+      }
+
+      this.init = function() {
+        var present = new Presenter(this)
+        
+        // view 和 Presenter之间使用策略模式
+        $btn.onclick =  present.add
+      }
+
+    }
+
+    function Presenter(view) {
+      var _model =  new Model();
+      var _view = view;
+
+      _view.render(_model)
+
+      this.add = function() {
+        _model.add()
+        _view.render(_model)
+      }
+    }
+
+    (function(){
+      var view = new View()
+      view.init()
+    })()
+
+  </script>
+
+</body>
+</html>
