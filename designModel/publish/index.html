@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Publish model</title>
+</head>
+<body>
+  <h4>发布-订阅模式 简易demo</h4>
+  <p>售楼处给订阅者发布楼盘订阅信息</p>
+
+  <label for="name">
+    name: <input type="text" name="name" id="name">
+  </label>
+  <label for="price">
+    want price: <input type="text" name="price" id="price">
+  </label>
+  <button id="sub">订阅</button>
+  <button id="pub">发布消息</button>
+
+  <script>
+    // 定义发布者
+    var saleOffices = {};
+    // 给发布者添加订阅者缓存者列表
+    saleOffices.clientlists = {};
+    // 添加订阅者
+    saleOffices.listen = function(key,fn) {
+      if(!this.clientlists[key]) {
+        this.clientlists[key] = []
+      }
+      this.clientlists[key].push(fn)
+    }
+    // 发布者发布消息
+    saleOffices.trigger = function() {
+      var key = Array.prototype.shift.call(arguments)
+      var fns = this.clientlists[key]
+      for(var i = 0; i < fns.length; i++) {
+        fns[i]()
+      }
+    }
+    // 测试 添加订阅者
+
+    var $name = document.getElementById('name')
+    var $price = document.getElementById('price')
+    var $btn = document.getElementById('sub')
+    var $pub = document.getElementById('pub')
+
+    $btn.onclick = function() {
+      const name = $name.value
+      const price = $price.value
+
+      saleOffices.listen(name, function() {
+        console.log(`${name}-${price}`)
+      })
+      alert('订阅成功')
+    }
+
+    $pub.onclick = function() {
+      for(let i in saleOffices.clientlists) {
+        saleOffices.trigger(i)
+      }
+      alert('发布成功')
+    }
+
+  </script>
+</body>
+</html>
