@@ -19,32 +19,80 @@
   <button id="sub">订阅</button>
   <button id="pub">发布消息</button>
 
+  <div id='show'></div>
+
   <script>
     // 定义发布者
     var saleOffices = {};
-    // 给发布者添加订阅者缓存者列表
-    saleOffices.clientlists = {};
-    // 添加订阅者
-    saleOffices.listen = function(key,fn) {
-      if(!this.clientlists[key]) {
-        this.clientlists[key] = []
+
+    // // 给发布者添加订阅者缓存者列表
+    // saleOffices.clientlists = {};
+    // // 添加订阅者
+    // saleOffices.listen = function(key,fn) {
+    //   if(!this.clientlists[key]) {
+    //     this.clientlists[key] = []
+    //   }
+    //   this.clientlists[key].push(fn)
+    // }
+    // // 发布者发布消息
+    // saleOffices.trigger = function() {
+    //   var key = Array.prototype.shift.call(arguments)
+    //   var fns = this.clientlists[key]
+    //   for(var i = 0; i < fns.length; i++) {
+    //     fns[i]()
+    //   }
+    // }
+
+
+    // 通用订阅-发布
+    var observer = {
+      clientlists: {},
+      listen(key, fn) {
+        if(!this.clientlists[key]){
+          this.clientlists[key] = []
+        }
+        this.clientlists[key].push(fn)
+      },
+      trigger() {
+        var key = Array.prototype.shift.call(arguments)
+        var fns = this.clientlists[key]
+        for(var i = 0; i < fns.length; i++){
+          fns[i]()
+        }
+      },
+      remove(key, fn) {
+        var fns = this.clientlists[key]
+        // 没有此订阅者订阅的消息
+        if(!fns) {
+          return `没有${fns}订阅的消息`
+        }
+        // 此订阅者没有说明取消具体的订阅事件，则将所有订阅事件取消掉
+        if(!fn) {
+          fns && (fns.length = 0)
+        }else {
+          // 说明取消具体的订阅事件
+          var subIndex = fns.findIndex(fn)
+          fns.splice(subIndex, 1)
+        }
       }
-      this.clientlists[key].push(fn)
     }
-    // 发布者发布消息
-    saleOffices.trigger = function() {
-      var key = Array.prototype.shift.call(arguments)
-      var fns = this.clientlists[key]
-      for(var i = 0; i < fns.length; i++) {
-        fns[i]()
+
+    function installPublish(obj) {
+      for(var key in observer) {
+        obj[key] = observer[key]
       }
     }
+
+    installPublish(saleOffices)
+
+
     // 测试 添加订阅者
 
     var $name = document.getElementById('name')
     var $price = document.getElementById('price')
     var $btn = document.getElementById('sub')
     var $pub = document.getElementById('pub')
+    var $show = document.getElementById('show')
 
     $btn.onclick = function() {
       const name = $name.value
@@ -53,6 +101,19 @@
       saleOffices.listen(name, function() {
         console.log(`${name}-${price}`)
       })
+      var subNode = document.createElement('p')
+      var reNode = document.createElement('button')
+      reNode.innerText = '移除订阅'
+      reNode.id = name
+      reNode.addEventListener('click', function(e) {
+        saleOffices.remove(name)
+        subNode.innerText = ''
+      })
+
+      subNode.innerText = `${name}-${price}`
+      subNode.appendChild(reNode)
+      $show.appendChild(subNode)
+
       alert('订阅成功')
     }
 
@@ -62,6 +123,9 @@
       }
       alert('发布成功')
     }
+
+
+    
 
   </script>
 </body>
