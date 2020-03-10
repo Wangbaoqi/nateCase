@@ -14,3 +14,7 @@ some cases or demo about frontend
 [发布-订阅](https://wangbaoqi.github.io/nateCase/designModel/publish/index.html)
 
 
+[MVVM model](https://wangbaoqi.github.io/nateCase/mvvmFront/index.html)
+
+
+

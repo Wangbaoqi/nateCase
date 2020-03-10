@@ -59,6 +59,8 @@ function Dep() {
 Dep.prototype = {
   addSub(sub) {
     this.subs.push(sub)
+    console.log(this.subs, this.subs.length, 'subs');
+    
   },
   removeSub(sub) {
     var index = this.subs.indexOf(sub);
