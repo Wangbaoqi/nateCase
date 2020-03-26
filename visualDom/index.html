@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>visual dom</title>
+</head>
+<body>
+  <script src="./element.js"></script>
+  <script src="./diff.js"></script>
+  <script src="./patch.js"></script>
+  <script src="./util/listDiff.js"></script>
+
+
+  <button onclick="initTwoDomObj()">visual-dom 生成 real-DOM</button>
+
+  <button onclick="changeVisualDom()">change visual-dom and diff two dom</button>
+
+
+  <button onclick="patchRealDom()">change visual-dom and look console</button>
+
+
+  <script>
+    var oldDomObj = null
+
+    var realDom = null
+
+    var patches = null 
+
+    function initTwoDomObj() {
+
+      oldDomObj = createElement(
+        'div', {id: 'visual-dom'},
+        [
+          createElement('ul', {id: 'list'}, [
+            createElement('li', {class: 'list-item'}, ['item01']),
+            createElement('li', {class: 'list-item'}, ['item02']),
+            createElement('li', {class: 'list-item'}, ['item03'])
+          ]),
+          createElement('p', {class: 'content'}, ['visual dom'])
+        ]
+      )
+
+      
+
+      console.log(oldDomObj, 'old')
+      // console.log(newDomObj, 'new')
+
+      realDom = oldDomObj.render()
+
+      document.body.appendChild(realDom)
+
+    }
+
+    function changeVisualDom() {
+
+      var newDomObj = createElement(
+        'div', {id: 'visual-dom'},
+        [
+          createElement('ul', {id: 'list'}, [
+            createElement('a', {class: 'list-a'}, ['item00']),
+            createElement('li', {class: 'list-li'}, ['item01']),
+            createElement('p', {class: 'list-p'}, ['item02']),
+          ]),
+          createElement('p', {class: 'content'}, ['visual dom'])
+        ]
+      )
+      console.log(newDomObj, 'new')
+
+
+      patches = diff(oldDomObj, newDomObj)
+
+      console.log(patches, 'patchs')
+
+    }
+
+
+
+    function patchRealDom(){
+      patch(realDom, patches)
+
+      realDom = oldDomObj.render()
+
+      document.body.appendChild(realDom)
+    }
+    
+
+
+    
+  </script>
+</body>
+</html>
